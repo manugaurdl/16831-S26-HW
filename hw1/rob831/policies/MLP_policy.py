@@ -81,11 +81,35 @@ class MLPPolicy(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
             observation = obs[None]
 
         # TODO return the action that the policy prescribes
-        raise NotImplementedError
+        observation = ptu.from_numpy(observation.astype(np.float32))
+        if self.discrete:
+            logits = self.forward(observation)
+            action_dist = distributions.Categorical(logits=logits)
+            action = action_dist.sample()
+            return ptu.to_numpy(action)
+        action = self.forward(observation)
+        return ptu.to_numpy(action)
 
     # update/train this policy
     def update(self, observations, actions, **kwargs):
-        raise NotImplementedError
+        observations = ptu.from_numpy(observations.astype(np.float32))
+        actions = ptu.from_numpy(actions.astype(np.float32))
+
+        if self.discrete:
+            logits = self.forward(observations)
+            action_labels = actions.squeeze(-1).long()
+            loss = F.cross_entropy(logits, action_labels)
+        else:
+            pred_actions = self.forward(observations)
+            loss = F.mse_loss(pred_actions, actions)
+
+        self.optimizer.zero_grad()
+        loss.backward()
+        self.optimizer.step()
+
+        return {
+            'Training Loss': ptu.to_numpy(loss),
+        }
 
     # This function defines the forward pass of the network.
     # You can return anything you want, but you should be able to differentiate
@@ -93,7 +117,9 @@ class MLPPolicy(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
     # return more flexible objects, such as a
     # `torch.distributions.Distribution` object. It's up to you!
     def forward(self, observation: torch.FloatTensor) -> Any:
-        raise NotImplementedError
+        if self.discrete:
+            return self.logits_na(observation)
+        return self.mean_net(observation)
 
 
 #####################################################
@@ -109,7 +135,20 @@ class MLPPolicySL(MLPPolicy):
             adv_n=None, acs_labels_na=None, qvals=None
     ):
         # TODO: update the policy and return the loss
-        loss = TODO
+        observations = ptu.from_numpy(observations.astype(np.float32))
+        actions = ptu.from_numpy(actions.astype(np.float32))
+
+        if self.discrete:
+            logits = self.forward(observations)
+            action_labels = actions.squeeze(-1).long()
+            loss = F.cross_entropy(logits, action_labels)
+        else:
+            pred_actions = self.forward(observations)
+            loss = self.loss(pred_actions, actions)
+
+        self.optimizer.zero_grad()
+        loss.backward()
+        self.optimizer.step()
 
         return {
             # You can add extra logging information here, but keep this line
