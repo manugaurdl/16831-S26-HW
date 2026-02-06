@@ -1,3 +1,72 @@
+Assignments for [CMU 16-831 Introduction to Robot Learning](https://sites.google.com/view/16-831-cmu/home).
+
+# Homework 1 - Behavioral Cloning & DAgger
+
+## Q1.3: Behavioral Cloning
+
+### Ant-v2
+```bash
+python -m rob831.scripts.run_hw1 \
+  --expert_policy_file rob831/policies/experts/Ant.pkl \
+  --env_name Ant-v2 \
+  --exp_name bc_ant_tuned \
+  --n_iter 1 \
+  --expert_data rob831/expert_data/expert_data_Ant-v2.pkl \
+  --video_log_freq -1 \
+  --eval_batch_size 5000 \
+  --num_agent_train_steps_per_iter 5000 \
+  --train_batch_size 1000
+```
+
+### Humanoid-v2
+```bash
+python -m rob831.scripts.run_hw1 \
+  --expert_policy_file rob831/policies/experts/Humanoid.pkl \
+  --env_name Humanoid-v2 \
+  --exp_name bc_humanoid_limited \
+  --n_iter 1 \
+  --expert_data rob831/expert_data/expert_data_Humanoid-v2.pkl \
+  --video_log_freq -1 \
+  --eval_batch_size 5000 \
+  --num_agent_train_steps_per_iter 1000 \
+  --train_batch_size 1000
+```
+
+## Q2: DAgger
+
+### Ant-v2
+```bash
+python -m rob831.scripts.run_hw1 \
+  --expert_policy_file rob831/policies/experts/Ant.pkl \
+  --env_name Ant-v2 \
+  --exp_name dagger_ant \
+  --n_iter 10 \
+  --do_dagger \
+  --expert_data rob831/expert_data/expert_data_Ant-v2.pkl \
+  --video_log_freq -1 \
+  --eval_batch_size 5000 \
+  --num_agent_train_steps_per_iter 5000 \
+  --train_batch_size 1000
+```
+
+### Humanoid-v2
+```bash
+python -m rob831.scripts.run_hw1 \
+  --expert_policy_file rob831/policies/experts/Humanoid.pkl \
+  --env_name Humanoid-v2 \
+  --exp_name dagger_humanoid \
+  --n_iter 10 \
+  --do_dagger \
+  --expert_data rob831/expert_data/expert_data_Humanoid-v2.pkl \
+  --video_log_freq -1 \
+  --eval_batch_size 5000 \
+  --num_agent_train_steps_per_iter 1000 \
+  --train_batch_size 1000
+```
+
+
+
+
 ## Resources for learning about PyTorch and Gym
 - For pytorch:  
 	- https://www.cs.utexas.edu/~yukez/cs391r_fall2021/slides/tutorial_09-29_pytorch_intro.pdf#page=6.00  
